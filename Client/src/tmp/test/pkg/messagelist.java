@@ -1,19 +1,13 @@
 package tmp.test.pkg;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Scanner;
 
-import android.app.Activity;
 import android.app.ListActivity;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -23,38 +17,25 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import android.app.ListActivity;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
 
 public class messagelist extends ListActivity
 {
-
-	//ArrayList<Locale> locales;
 	ArrayList<Message> messages;
 	/** Called when the activity is first created. */
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState)
+	{
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.messagelist);
 		LoadTextFromURLTask task = new LoadTextFromURLTask();
 		task.execute();
-		//setListAdapter(new ArrayAdapter<String>(this, R.layout.list_item, names));
 
 	}
 
@@ -76,7 +57,7 @@ public class messagelist extends ListActivity
 		catch (SAXException e)
 		{
 			ToastText(e.getMessage());
-			//System.exit(1);
+			System.exit(1);
 		}
 
 		XMLStatHandler handler = new XMLStatHandler();
@@ -84,19 +65,11 @@ public class messagelist extends ListActivity
 		reader.setContentHandler(handler);
 		try
 		{
-			//ToastText(i);
-			//InputSource is = new InputSource();
-			//InputStream is
 			InputSource is = new InputSource(new StringReader(i));
 			reader.parse(is);
 			if(handler.hasError())
 			{
 				ToastText("Fix the errors listed above...");
-			}
-			else
-			{
-				//ToastText("No errors detected within parsetext.");				
-				//ArrayList<String> tmp = handler.messages;
 			}
 		} 
 		catch (Exception e)
@@ -106,9 +79,7 @@ public class messagelist extends ListActivity
 		}
 		try
 		{
-			//ToastText("No errors detected." + this.getLocalClassName());
-			//ToastText(handler.messages.get(0));
-			setListAdapter(new ArrayAdapter<String>(this, R.layout.list_item, handler.messages));
+			setListAdapter(new ArrayAdapter<String>(this, R.layout.list_item, handler.getMessages()));
 			messages = handler.getObjMessages();
 			SetClickListener();
 		}
@@ -176,11 +147,6 @@ public class messagelist extends ListActivity
 		protected void onPostExecute(String result)
 		{
 			ParseText(result);
-			//ToastText(result);
-			// Update the text for the TextView	
-			//TextView et = (TextView)findViewById(R.id.txtContent);
-			//et.setText(result);
-			
 		}
 	}
 }
