@@ -1,34 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
     android:orientation="vertical" >
-
+	
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView" />
-
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="0px"
+        android:text="Write a message" />
+
     <EditText
         android:id="@+id/editText1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.08"
+        android:layout_height="391dp"
+        android:layout_marginTop="0px"
         android:ems="10"
-        android:inputType="textMultiLine" />
-
+        android:fillViewport="true"
+        android:gravity="top"
+        android:inputType="textMultiLine"
+        android:singleLine="false" />
+
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:columnCount="1" >
-
+        android:columnCount="2" >
+
         <Button
-            android:id="@+id/button1"
-            android:layout_column="0"
-            android:layout_gravity="center_horizontal"
+            android:id="@+id/btnPost"
+            android:layout_column="1"
             android:layout_row="0"
-            android:text="Button" />
+            android:text="Post" />
+
+        <Space
+            android:layout_width="128dp"
+            android:layout_height="1dp"
+            android:layout_column="0"
+            android:layout_row="0" />
     </GridLayout>
 
 </LinearLayout>

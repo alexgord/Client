@@ -9,11 +9,13 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import android.app.ListActivity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -34,11 +36,26 @@ public class messagelist extends ListActivity
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.messagelist);
+		Button post = (Button)this.findViewById(R.id.btnAdd);
+		post.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				SwitchToPost();
+			}
+		});
 		LoadTextFromURLTask task = new LoadTextFromURLTask();
 		task.execute();
 
 	}
 
+	private void SwitchToPost()
+	{
+		Intent intent = new Intent(this, postmessage.class);
+		this.startActivity(intent);
+	}
+	
 	private void ToastText(String i)
 	{
 		Toast t = Toast.makeText(getApplicationContext(),
@@ -114,7 +131,7 @@ public class messagelist extends ListActivity
 		{
 
 			try {
-				URL url = new URL("http://pastebin.com/raw.php?i=HCn1kYhQ");
+				URL url = new URL("http://pastebin.com/raw.php?i=8rg6fMPj");
 				//URL url = new URL("http://linux-cs.johnabbott.qc.ca/~ian/cs603/alice/text_" + "en" + ".txt");
 				URLConnection conn = url.openConnection();
 
