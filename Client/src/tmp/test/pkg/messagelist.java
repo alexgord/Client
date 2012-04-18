@@ -6,7 +6,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -118,7 +117,8 @@ public class messagelist extends ListActivity
 	private void SetClickListener()
 	{
 		ListView lv = this.getListView();
-		lv.setOnItemClickListener(new OnItemClickListener() {
+		lv.setOnItemClickListener(new OnItemClickListener()
+		{
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
@@ -142,7 +142,8 @@ public class messagelist extends ListActivity
 		protected String doInBackground(Void... params)
 		{
 
-			try {
+			try
+			{
 				URL url = new URL("http://pastebin.com/raw.php?i=8rg6fMPj");
 				//URL url = new URL("http://linux-cs.johnabbott.qc.ca/~ian/cs603/alice/text_" + "en" + ".txt");
 				URLConnection conn = url.openConnection();

@@ -9,8 +9,6 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import android.widget.Toast;
-
 public class XMLStatHandler implements ErrorHandler, ContentHandler
 {
 	private boolean error;
@@ -136,7 +134,6 @@ public class XMLStatHandler implements ErrorHandler, ContentHandler
 	@Override
 	public void startPrefixMapping(String arg0, String arg1)
 			throws SAXException {
-		// TODO Auto-generated method stub
 
 	}
 
