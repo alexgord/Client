@@ -6,6 +6,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Scanner;
 
 import android.app.ListActivity;
@@ -29,6 +31,9 @@ import android.view.View;
 public class messagelist extends ListActivity
 {
 	ArrayList<Message> messages;
+	String user;
+	String IP;
+	String room;
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -45,9 +50,13 @@ public class messagelist extends ListActivity
 				SwitchToPost();
 			}
 		});
+		Bundle extras = getIntent().getExtras();
+
+		user = extras.getString("user");
+		IP = extras.getString("IP");
+		room = extras.getString("room");
 		LoadTextFromURLTask task = new LoadTextFromURLTask();
 		task.execute();
-
 	}
 
 	private void SwitchToPost()
@@ -55,14 +64,14 @@ public class messagelist extends ListActivity
 		Intent intent = new Intent(this, postmessage.class);
 		this.startActivity(intent);
 	}
-	
+
 	private void ToastText(String i)
 	{
 		Toast t = Toast.makeText(getApplicationContext(),
 				i, Toast.LENGTH_LONG);
 		t.show();
 	}
-	
+
 	private void ParseText(String i)
 	{
 		System.setProperty("org.xml.sax.driver","org.xmlpull.v1.sax2.Driver");
@@ -105,7 +114,7 @@ public class messagelist extends ListActivity
 			ToastText("setlistadapter failed");
 		}
 	}
-	
+
 	private void SetClickListener()
 	{
 		ListView lv = this.getListView();
@@ -115,14 +124,17 @@ public class messagelist extends ListActivity
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 			{
 				Message tmp = messages.get(position);
-				String toToast = tmp.getName() + " " + tmp.getTime() + " " + tmp.getMessage();
+				Date d = new Date();
+				long ms = Long.parseLong(tmp.getTime());
+				d.setTime(ms);
+				String toToast = tmp.getName() + " said:\n"  + tmp.getMessage()  + "\nat: " + d.toString();
 				Toast t = Toast.makeText(getApplicationContext(), toToast, Toast.LENGTH_LONG);
 				t.show();
 			}
-			
+
 		});
 	}
-	
+
 	private class LoadTextFromURLTask extends AsyncTask<Void, Void, String>
 	{
 
@@ -136,12 +148,12 @@ public class messagelist extends ListActivity
 				URLConnection conn = url.openConnection();
 
 				Scanner sc = new Scanner(conn.getInputStream());
-				
+
 				// neat trick for reading complete stream into String:
 				//   http://weblogs.java.net/blog/pat/archive/2004/10/stupid_scanner_1.html
 
-					return sc.useDelimiter("\\A").next();
-				
+				return sc.useDelimiter("\\A").next();
+
 
 			} 
 			catch (MalformedURLException e)
