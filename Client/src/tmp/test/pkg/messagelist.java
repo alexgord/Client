@@ -30,15 +30,19 @@ import android.view.View;
 public class messagelist extends ListActivity
 {
 	ArrayList<Message> messages;
+	ArrayList<String> strMessages;
 	String user;
 	String IP;
 	String room;
+	boolean addToMessages;
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-
+		messages = new ArrayList<Message>();
+		strMessages = new ArrayList<String>();
+		addToMessages = false;
 		setContentView(R.layout.messagelist);
 		Button post = (Button)this.findViewById(R.id.btnAdd);
 		post.setOnClickListener(new View.OnClickListener()
@@ -49,6 +53,19 @@ public class messagelist extends ListActivity
 				SwitchToPost();
 			}
 		});
+
+		Button refresh = (Button)this.findViewById(R.id.btnRefresh);
+		refresh.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				addToMessages = true;
+				LoadTextFromURLTask task = new LoadTextFromURLTask();
+				task.execute();
+			}
+		});
+
 		Bundle extras = getIntent().getExtras();
 
 		user = extras.getString("user");
@@ -58,12 +75,23 @@ public class messagelist extends ListActivity
 		task.execute();
 	}
 
+	/************Method SwitchToPost************
+	This method changes the current activity
+	to the postmessage activity, where users
+	can post messages.
+	 */
 	private void SwitchToPost()
 	{
 		Intent intent = new Intent(this, postmessage.class);
+		intent.putExtra("user",user);
+		intent.putExtra("IP", IP);
+		intent.putExtra("room", room);
 		this.startActivity(intent);
 	}
 
+	/************Method ToastText************
+	This method toasts the string sent to it.
+	 */
 	private void ToastText(String i)
 	{
 		Toast t = Toast.makeText(getApplicationContext(),
@@ -71,6 +99,14 @@ public class messagelist extends ListActivity
 		t.show();
 	}
 
+	/************Method ParseText************
+	This method parses the string sent to it.
+	The XML within this string is parsed
+	using the XMLStatHandler class. Once the
+	parsing is finished, this method
+	populates the messages and strMessages
+	arraylists with the result.
+	 */
 	private void ParseText(String i)
 	{
 		System.setProperty("org.xml.sax.driver","org.xmlpull.v1.sax2.Driver");
@@ -104,9 +140,19 @@ public class messagelist extends ListActivity
 		}
 		try
 		{
-			setListAdapter(new ArrayAdapter<String>(this, R.layout.list_item, handler.getMessages()));
-			messages = handler.getObjMessages();
+			if (addToMessages)
+			{
+				messages.addAll(handler.getObjMessages());
+				strMessages.addAll(handler.getMessages());
+			}
+			else
+			{
+				messages = handler.getObjMessages();
+				strMessages = handler.getMessages();
+			}
+			setListAdapter(new ArrayAdapter<String>(this, R.layout.list_item, strMessages));
 			SetClickListener();
+			addToMessages = false;
 		}
 		catch(Exception e)
 		{
@@ -114,6 +160,13 @@ public class messagelist extends ListActivity
 		}
 	}
 
+	/************Method SetClickListener************
+	This method sets the click listener
+	on the listview in this activity.
+	When a user clicks on an item in the
+	listview, the information about
+	that message is toasted to the screen.
+	 */
 	private void SetClickListener()
 	{
 		ListView lv = this.getListView();
@@ -128,24 +181,40 @@ public class messagelist extends ListActivity
 				long ms = Long.parseLong(tmp.getTime());
 				d.setTime(ms);
 				String toToast = tmp.getName() + " said:\n"  + tmp.getMessage()  + "\nat: " + d.toString();
-				Toast t = Toast.makeText(getApplicationContext(), toToast, Toast.LENGTH_LONG);
-				t.show();
+				ToastText(toToast);
 			}
 
 		});
 	}
 
+	/*********************************LoadTextFromURLTask CLASS INFO*****************************************
+
+	This class is responsible for contacting the server and retrieving the messages from the
+	current room.  
+
+	 *********************************************************************************************/
 	private class LoadTextFromURLTask extends AsyncTask<Void, Void, String>
 	{
 
 		@Override
 		protected String doInBackground(Void... params)
 		{
-
 			try
 			{
-				URL url = new URL("http://pastebin.com/raw.php?i=8rg6fMPj");
-				//URL url = new URL("http://linux-cs.johnabbott.qc.ca/~ian/cs603/alice/text_" + "en" + ".txt");
+				long last = 0;
+				if (messages.size() > 0)
+				{
+					//we need to know when the last message was written
+					last = Long.parseLong(messages.get(messages.size() - 1).getTime());
+				}
+				String urlStr = "http://" + IP + ":8000/" + room + "/retrieve";
+
+				if (last > 0)//If this is the first time loading the messages from the server
+				{
+					//make sure we only get messages since the time when the last message was written
+					urlStr += "?since=" + last;
+				}
+				URL url = new URL(urlStr);
 				URLConnection conn = url.openConnection();
 
 				Scanner sc = new Scanner(conn.getInputStream());
@@ -154,8 +223,6 @@ public class messagelist extends ListActivity
 				//   http://weblogs.java.net/blog/pat/archive/2004/10/stupid_scanner_1.html
 
 				return sc.useDelimiter("\\A").next();
-
-
 			} 
 			catch (MalformedURLException e)
 			{
@@ -165,7 +232,7 @@ public class messagelist extends ListActivity
 			catch (IOException e)
 			{
 				e.printStackTrace();
-				return e.getMessage();//"ugh IOException";
+				return e.getMessage();
 			}
 			catch(Exception e)
 			{

@@ -12,9 +12,9 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginLeft="0px"
         android:text="Write a message" />
-
+
     <EditText
-        android:id="@+id/editText1"
+        android:id="@+id/ETMessage"
         android:layout_width="match_parent"
         android:layout_height="391dp"
         android:layout_marginTop="0px"
